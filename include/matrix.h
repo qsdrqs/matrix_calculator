@@ -44,6 +44,12 @@ class Matrix {
 
     double determinant();
     Matrix transpose();
+
+    // matrix operations by GPU
+    Matrix gpu_add(const Matrix& other);
+    Matrix gpu_sub(const Matrix& other);
+    Matrix gpu_dot_product(const Matrix& other);
+
 };
 
 #endif

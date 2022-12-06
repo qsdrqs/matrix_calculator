@@ -20,7 +20,7 @@ Matrix::Matrix(double* data, int height, int width) {
 
     // judge whether the data is valid
     if (data == NULL) {
-        fprintf(stderr, "Error: data is NULL\\n");
+        fprintf(stderr, "Error: data is NULL\n");
         exit(1);
     }
     cudaHostAlloc(&my_data, height * width * sizeof(double),
@@ -121,7 +121,7 @@ Matrix Matrix::operator*(const Matrix& other) {
 
     // check the dimensions
     if (this->width != other.height && this->height != other.width) {
-        fprintf(stderr, "Error: matrix dimensions do not match\\n");
+        fprintf(stderr, "Error: matrix dimensions do not match\n");
         exit(1);
     }
 
@@ -144,7 +144,7 @@ Matrix Matrix::operator*(const Matrix& other) {
 
 double Matrix::determinant() {
     if (this->height != this->width) {
-        fprintf(stderr, "Error: matrix is not square\\n");
+        fprintf(stderr, "Error: matrix is not square\n");
         exit(1);
     }
     if (this->height == 1) {

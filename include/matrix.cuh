@@ -11,7 +11,7 @@
 
 #include "matrix.h"
 
-__global__ void test();
+__global__ void GPU_add(Matrix* A, Matrix* B);
 
 void foo();
 #endif
