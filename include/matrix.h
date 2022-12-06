@@ -5,6 +5,8 @@
  *
  */
 
+#include <cstdlib>
+
 #ifndef MATRIX_H
 #define MATRIX_H
 class Matrix {
@@ -16,13 +18,16 @@ class Matrix {
    public:
     Matrix(double* data, int height, int width);
 
-    // randomly generate matrix
+    // generate zero matrix
     Matrix(int length, int width);
+
+    // randomly generate matrix
+    Matrix(int length, int width, uint urand);
 
     ~Matrix();
 
     // get the value of the matrix at (i, j)
-    double value(int i, int j);
+    double value(int i, int j) const;
 
     // getter functions
     double* get_data() const { return this->data; }
@@ -34,6 +39,11 @@ class Matrix {
     // basic matrix operations by CPU
     Matrix operator+(const Matrix& other);
     Matrix operator-(const Matrix& other);
+    Matrix dot_product(const Matrix& other);  // element-wise multiplication
+    Matrix operator*(const Matrix& other);
+
+    double determinant();
+    Matrix transpose();
 };
 
 #endif

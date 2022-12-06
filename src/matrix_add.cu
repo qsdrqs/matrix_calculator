@@ -5,13 +5,12 @@
  *
  */
 
-#include "matrix.cuh"
-#include "matrix.h"
 #include <iostream>
 
-__global__ void test() {
-    printf("Hello World!");
-}
+#include "matrix.cuh"
+#include "matrix.h"
+
+__global__ void test() { printf("Hello World!\n"); }
 
 void foo() {
     test<<<1, 1>>>();

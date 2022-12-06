@@ -90,3 +90,73 @@ TEST(MatrixTest, Sub) {
         }
     }
 }
+
+TEST(MatrixTest, dot_product) {
+    int width = 10;
+    int height = 10;
+    Matrix m(height, width);
+    Matrix m2(height, width);
+
+    Matrix m3 = m.dot_product(m2);
+
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            EXPECT_EQ(m3.value(i, j), m.value(i, j) * m2.value(i, j));
+        }
+    }
+}
+
+TEST(MatrixTest, Multiply) {
+    int width = 5;
+    int height = 8;
+    Matrix m(height, width);
+    Matrix m2(width, height);
+
+    Matrix m3 = m * m2;
+
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            double sum = 0;
+            for (int k = 0; k < width; ++k) {
+                sum += m.value(i, k) * m2.value(k, j);
+            }
+            EXPECT_EQ(m3.value(i, j), sum);
+        }
+    }
+}
+
+TEST(MatrixTest, Determinant) {
+    int width = 5;
+    int height = 5;
+    double* h_data = new double[width * height];
+    for (int i = 0; i < width; ++i) {
+        h_data[i + i * width] = i;
+    }
+
+    Matrix m(h_data, height, width);
+
+    double det = m.determinant();
+
+    double expected = 1;
+
+    for (int i = 0; i < width; ++i) {
+        expected *= i;
+    }
+
+    EXPECT_EQ(det, expected);
+}
+
+TEST(MatrixTest, Transpose) {
+    int width = 10;
+    int height = 20;
+
+    Matrix m(height, width, time(NULL));
+
+    Matrix m2 = m.transpose();
+
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            EXPECT_EQ(m.value(i, j), m2.value(j, i));
+        }
+    }
+}

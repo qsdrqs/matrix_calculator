@@ -3,7 +3,7 @@ project(matrix_calculator)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 set(TOP_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-add_compile_definitions(NDEBUG)
+set(CMAKE_BUILD_TYPE Debug)
 
 message(${CMAKE_SYSTEM_NAME})
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
