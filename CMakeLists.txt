@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.0)
-project(lab2)
+project(matrix_calculator)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 set(TOP_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -29,25 +29,39 @@ set(CUDA_TOOLKIT_SAMPLES_DIR $ENV{HOME}\\cuda-samples)
 message(STATUS "cuda sample dir: ${CUDA_TOOLKIT_SAMPLES_DIR}")
 else (WINDOWS)
 
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++1y" COMPILER_SUPPORTS_CXX11)
-CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-if(COMPILER_SUPPORTS_CXX11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-elseif(COMPILER_SUPPORTS_CXX0X)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-else()
-    message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-endif()
-	
 set(CUDA_TOOLKIT_SAMPLES_DIR ${CUDA_TOOLKIT_ROOT_DIR}/samples)
 set(CUDA_TOOLKIT_ROOT_DIR ${CUDA_TOOLKIT_ROOT_DIR})
 endif(WINDOWS)
 ###################################################################
 find_package( NVTX REQUIRED )
 #find_package( NVML REQUIRED )
-set(BUILD_THIRDPARTY ON)
 
-add_subdirectory (thirdparty)
-add_subdirectory (Src)
+set(INCLUDES ${TOP_DIR}/include)
 
+include_directories(
+  ${SOURCE_DIR}
+  ${CUDA_TOOLKIT_INCLUDE}
+  ${NVTX_INCLUDE_DIR}
+  ${NVML_INCLUDE_DIR}
+  ${FREEGLUT_INCLUDE_DIR}
+  ${GLEW_INCLUDE_DIR}
+  ${CUDA_TOOLKIT_SAMPLES_DIR}/Common/
+)
+
+add_subdirectory (src)
+add_subdirectory (test)
+
+# add google test
+# GoogleTest requires at least C++14
+set(CMAKE_CXX_STANDARD 14)
+
+include(FetchContent)
+cmake_policy(SET CMP0135 NEW)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/refs/tags/release-1.12.1.zip
+)
+
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)

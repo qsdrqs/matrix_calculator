@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+# vim
+.exrc
+skeleton.*
+
+# cmake
+/build
+
+/.cache
