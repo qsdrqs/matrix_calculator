@@ -7,8 +7,9 @@
 
 #ifndef MATRIX_CUH
 #define MATRIX_CUH
-#include "matrix.h"
 #include <cuda_runtime.h>
+
+#include "matrix.h"
 
 __global__ void test();
 

@@ -19,8 +19,21 @@ class Matrix {
     // randomly generate matrix
     Matrix(int length, int width);
 
+    ~Matrix();
+
     // get the value of the matrix at (i, j)
     double value(int i, int j);
+
+    // getter functions
+    double* get_data() const { return this->data; }
+    int get_height() const { return this->height; }
+    int get_width() const { return this->width; }
+
+    Matrix copy();
+
+    // basic matrix operations by CPU
+    Matrix operator+(const Matrix& other);
+    Matrix operator-(const Matrix& other);
 };
 
 #endif
