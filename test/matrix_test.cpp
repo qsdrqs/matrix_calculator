@@ -107,7 +107,6 @@ TEST(MatrixTest, dot_product) {
 }
 
 TEST(MatrixTest, Multiply) {
-    GTEST_SKIP();
     int width = 5;
     int height = 8;
     Matrix m(height, width, time(NULL));
@@ -118,23 +117,23 @@ TEST(MatrixTest, Multiply) {
     for (int i = 0; i < height; ++i) {
         for (int j = 0; j < width; ++j) {
             double sum = 0;
-            for (int k = 0; k < width; ++k) {
+            for (int k = 0; k < height; ++k) {
                 sum += m.value(i, k) * m2.value(k, j);
             }
+
             EXPECT_EQ(m3.value(i, j), sum);
         }
     }
 }
 
 TEST(MatrixTest, Determinant) {
-    GTEST_SKIP();
-    int width = 5;
-    int height = 5;
+    int width = 2;
+    int height = 2;
     double* h_data = new double[width * height];
 
     // generate matrix
     for (int i = 0; i < width; ++i) {
-        h_data[i + i * width] = i;
+        h_data[i + i * width] = (i + 1);
     }
 
     Matrix m(h_data, height, width);
@@ -147,7 +146,6 @@ TEST(MatrixTest, Determinant) {
         expected *= i;
     }
 
-    printf("expected: %f, actual: %f\n", expected, det);
     EXPECT_EQ(det, expected);
 }
 
@@ -164,4 +162,23 @@ TEST(MatrixTest, Transpose) {
             EXPECT_EQ(m.value(i, j), m2.value(j, i));
         }
     }
+}
+
+TEST(MatrixTest, Files) {
+    int width = 10;
+    int height = 20;
+
+    Matrix m(height, width, time(NULL));
+
+    m.to_file("test.txt");
+
+    Matrix m2("test.txt");
+
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            EXPECT_EQ(m.value(i, j), m2.value(i, j));
+        }
+    }
+
+    remove("test.txt");
 }

@@ -19,10 +19,13 @@ class Matrix {
     Matrix(double* data, int height, int width);
 
     // generate zero matrix
-    Matrix(int length, int width);
+    Matrix(int height, int width);
 
     // randomly generate matrix
-    Matrix(int length, int width, uint urand);
+    Matrix(int height, int width, uint urand);
+
+    // from file
+    Matrix(const char* filename);
 
     ~Matrix();
 
@@ -48,8 +51,15 @@ class Matrix {
     // matrix operations by GPU
     Matrix gpu_add(const Matrix& other);
     Matrix gpu_sub(const Matrix& other);
-    Matrix gpu_dot_product(const Matrix& other);
+    Matrix gpu_dot_product(const Matrix& other);  // element-wise multiplication
+    Matrix gpu_mul(const Matrix& other);
 
+    double gpu_determinant();
+    Matrix gpu_transpose();
+
+    // helper functions
+    void print();
+    void to_file(const char* filename);
 };
 
 #endif

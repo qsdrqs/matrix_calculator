@@ -59,6 +59,27 @@ Matrix::Matrix(int height, int width, uint urand) {
     }
 }
 
+Matrix::Matrix(const char *filename) {
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL) {
+        fprintf(stderr, "Error: cannot open file %s\n", filename);
+        exit(1);
+    }
+    // parse height and width
+    // NOTE: This is UNSAFE, but it's OK for this assignment
+    fscanf(fp, "Matrix %d x %d", &this->height, &this->width);
+    cudaHostAlloc(&this->data, this->height * this->width * sizeof(double),
+                  cudaHostAllocDefault);
+
+    // parse data
+    for (int i = 0; i < this->height; i++) {
+        for (int j = 0; j < this->width; j++) {
+            fscanf(fp, "%lf\t", &this->data[i * this->width + j]);
+        }
+    }
+
+    fclose(fp);
+}
 
 Matrix::~Matrix() { cudaFree(this->data); }
 
@@ -137,7 +158,7 @@ Matrix Matrix::operator*(const Matrix& other) {
         }
     }
 
-    Matrix m = Matrix(data, this->width, this->height);
+    Matrix m = Matrix(data, this->height, other.width);
     cudaFree(data);
     return m;
 }
@@ -181,4 +202,30 @@ Matrix Matrix::transpose() {
     Matrix m = Matrix(data, this->width, this->height);
     cudaFree(data);
     return m;
+}
+
+void Matrix::print() {
+    printf("Matrix %d x %d\n", this->height, this->width);
+    for (int i = 0; i < this->height; i++) {
+        for (int j = 0; j < this->width - 1; j++) {
+            printf("%f\t", this->data[i * this->width + j]);
+        }
+        printf("%f\n", this->data[i * this->width + this->width - 1]);
+    }
+}
+
+void Matrix::to_file(const char *filename) {
+    FILE *f = fopen(filename, "w");
+    if (f == NULL) {
+        fprintf(stderr, "Error: cannot open file %s\n", filename);
+        exit(1);
+    }
+    fprintf(f, "Matrix %d x %d\n", this->height, this->width);
+    for (int i = 0; i < this->height; i++) {
+        for (int j = 0; j < this->width - 1; j++) {
+            fprintf(f, "%f\t", this->data[i * this->width + j]);
+        }
+        fprintf(f, "%f\n", this->data[i * this->width + this->width - 1]);
+    }
+    fclose(f);
 }
