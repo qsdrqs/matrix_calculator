@@ -64,6 +64,7 @@ int main(int argc, char* argv[]) {
             dot = true;
         } else if (strcmp(argv[i], "--random") == 0) {
             random = true;
+            // NOTE: This is UNSAFE, but it's OK for this assignment
             random_row = atoi(argv[++i]);
             if (random_row <= 0) {
                 fprintf(stderr, "Error: invalid row number for random matrix\n");
