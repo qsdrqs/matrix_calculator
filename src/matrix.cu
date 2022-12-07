@@ -111,6 +111,11 @@ __global__ void GPU_multiply(double *A, double *B, double *C, int this_height,
 }
 
 Matrix Matrix::gpu_add(const Matrix &other) {
+    // check the size of matrices
+    if (this->width != other.width || this->height != other.height) {
+        fprintf(stderr, "Error: matrix dimensions do not match\n");
+    }
+
     dim3 dimBlock(THREADS_PER_BLOCK);
     int size = this->width * this->height;
     dim3 dimGrid((size + dimBlock.x - 1) / dimBlock.x);
@@ -139,6 +144,10 @@ Matrix Matrix::gpu_add(const Matrix &other) {
 }
 
 Matrix Matrix::gpu_sub(const Matrix &other) {
+    // check the size of matrices
+    if (this->width != other.width || this->height != other.height) {
+        fprintf(stderr, "Error: matrix dimensions do not match\n");
+    }
     dim3 dimBlock(THREADS_PER_BLOCK);
     int size = this->width * this->height;
     dim3 dimGrid((size + dimBlock.x - 1) / dimBlock.x);
@@ -167,6 +176,10 @@ Matrix Matrix::gpu_sub(const Matrix &other) {
 }
 
 Matrix Matrix::gpu_dot_product(const Matrix &other) {
+    // check the size of matrices
+    if (this->width != other.width || this->height != other.height) {
+        fprintf(stderr, "Error: matrix dimensions do not match\n");
+    }
     dim3 dimBlock(THREADS_PER_BLOCK);
     int size = this->width * this->height;
     dim3 dimGrid((size + dimBlock.x - 1) / dimBlock.x);

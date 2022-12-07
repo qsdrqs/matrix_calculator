@@ -98,6 +98,10 @@ Matrix Matrix::copy() {
 }
 
 Matrix Matrix::operator+(const Matrix& other) {
+    // check the size of matrices
+    if (this->width != other.width || this->height != other.height) {
+        fprintf(stderr, "Error: matrix dimensions do not match\n");
+    }
     double* data;
     cudaHostAlloc(&data, this->height * this->width * sizeof(double),
                   cudaHostAllocDefault);
@@ -110,6 +114,10 @@ Matrix Matrix::operator+(const Matrix& other) {
 }
 
 Matrix Matrix::operator-(const Matrix& other) {
+    // check the size of matrices
+    if (this->width != other.width || this->height != other.height) {
+        fprintf(stderr, "Error: matrix dimensions do not match\n");
+    }
     double* data;
     cudaHostAlloc(&data, this->height * this->width * sizeof(double),
                   cudaHostAllocDefault);
@@ -123,6 +131,10 @@ Matrix Matrix::operator-(const Matrix& other) {
 
 // element-wise multiplication
 Matrix Matrix::dot_product(const Matrix& other) {
+    // check the size of matrices
+    if (this->width != other.width || this->height != other.height) {
+        fprintf(stderr, "Error: matrix dimensions do not match\n");
+    }
     double* data;
     cudaHostAlloc(&data, this->height * this->width * sizeof(double),
                   cudaHostAllocDefault);
