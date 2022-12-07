@@ -212,7 +212,7 @@ Matrix Matrix::gpu_transpose() {
     }
     for (int i = 0; i < 4; i++) {
         cudaMemcpyAsync(d_A + i * size / 4, this->data + i * size / 4,
-                        size * sizeof(double), cudaMemcpyHostToDevice,
+                        size * sizeof(double) / 4, cudaMemcpyHostToDevice,
                         stream[i]);
 
         GPU_transpose<<<dimGrid, dimBlock.x / 4, 0, stream[i]>>>(
