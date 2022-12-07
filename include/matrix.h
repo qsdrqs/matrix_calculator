@@ -52,7 +52,7 @@ class Matrix {
     Matrix gpu_add(const Matrix& other);
     Matrix gpu_sub(const Matrix& other);
     Matrix gpu_dot_product(const Matrix& other);  // element-wise multiplication
-    Matrix gpu_mul(const Matrix& other);
+    Matrix gpu_multiply(const Matrix& other);
 
     double gpu_determinant();
     Matrix gpu_transpose();

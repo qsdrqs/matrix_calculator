@@ -82,3 +82,59 @@ TEST(MatrixGPUTest, Transpose) {
         }
     }
 }
+
+TEST(MatrixGPUTest, Multiply) {
+    // test matrix multiplication
+    int self_height = 64;
+    int share = 32;
+    int other_width = 64;
+    Matrix m(self_height, share, time(NULL));
+    Matrix m2(share, other_width, time(NULL));
+
+    Matrix m3 = m * m2;
+    Matrix m4 = m.gpu_multiply(m2);
+
+    for (int i = 0; i < self_height; ++i) {
+        for (int j = 0; j < other_width; ++j) {
+            EXPECT_EQ(m3.value(i, j), m4.value(i, j));
+        }
+    }
+}
+
+TEST(MatrixGPUTest, Multiply2) {
+    // test matrix multiplication
+    int self_height = 1;
+    int share = 2;
+    int other_width = 1;
+    Matrix m(self_height, share, time(NULL));
+    Matrix m2(share, other_width, time(NULL));
+
+
+    Matrix m3 = m * m2;
+    Matrix m4 = m.gpu_multiply(m2);
+
+    for (int i = 0; i < self_height; ++i) {
+        for (int j = 0; j < other_width; ++j) {
+            EXPECT_EQ(m3.value(i, j), m4.value(i, j));
+        }
+    }
+}
+
+TEST(MatrixGPUTest, Multiply3) {
+    // test matrix multiplication
+    int self_height = 23;
+    int share = 43;
+    int other_width = 41;
+    Matrix m(self_height, share, time(NULL));
+    Matrix m2(share, other_width, time(NULL));
+
+
+    Matrix m3 = m * m2;
+    Matrix m4 = m.gpu_multiply(m2);
+
+    for (int i = 0; i < self_height; ++i) {
+        for (int j = 0; j < other_width; ++j) {
+            EXPECT_EQ(m3.value(i, j), m4.value(i, j));
+        }
+    }
+}
