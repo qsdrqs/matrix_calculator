@@ -88,6 +88,52 @@ TEST(MatrixGPUTest, Transpose) {
     }
 }
 
+TEST(MatrixGPUTest, Transpose2) {
+    // test matrix transpose
+    int width = 1000;
+    int height = 2000;
+
+    Matrix m(height, width, time(NULL));
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            m.set_value(i, j, i * width + j + 1);
+        }
+    }
+
+    Matrix m2 = m.transpose();
+
+    Matrix m3 = m.gpu_transpose();
+
+    for (int i = 0; i < width; ++i) {
+        for (int j = 0; j < height; ++j) {
+            EXPECT_EQ(m2.value(i, j), m3.value(i, j));
+        }
+    }
+}
+
+TEST(MatrixGPUTest, Transpose3) {
+    // test matrix transpose
+    int width = 10;
+    int height = 2000;
+
+    Matrix m(height, width, time(NULL));
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            m.set_value(i, j, i * width + j + 1);
+        }
+    }
+
+    Matrix m2 = m.transpose();
+
+    Matrix m3 = m.gpu_transpose();
+
+    for (int i = 0; i < width; ++i) {
+        for (int j = 0; j < height; ++j) {
+            EXPECT_EQ(m2.value(i, j), m3.value(i, j));
+        }
+    }
+}
+
 TEST(MatrixGPUTest, Multiply) {
     // test matrix multiplication
     int self_height = 64;
