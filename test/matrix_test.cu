@@ -67,10 +67,15 @@ TEST(MatrixGPUTest, DotProduct) {
 
 TEST(MatrixGPUTest, Transpose) {
     // test matrix transpose
-    int width = 10;
-    int height = 20;
+    int width = 1024;
+    int height = 2048;
 
     Matrix m(height, width, time(NULL));
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            m.set_value(i, j, i * width + j + 1);
+        }
+    }
 
     Matrix m2 = m.transpose();
 

@@ -87,6 +87,10 @@ double Matrix::value(int i, int j) const {
     return this->data[i * this->width + j];
 }
 
+void Matrix::set_value(int i, int j, double value) {
+    this->data[i * this->width + j] = value;
+}
+
 Matrix Matrix::copy() {
     double* new_data;
     cudaHostAlloc(&new_data, this->height * this->width * sizeof(double),

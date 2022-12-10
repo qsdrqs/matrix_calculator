@@ -43,8 +43,14 @@ __global__ void GPU_dot_product(double *A, double *B, double *C, int n) {
 }
 
 __global__ void GPU_transpose(double *A, double *B, int width, int height,
-                              int base) {
-    int i = blockIdx.x * blockDim.x + threadIdx.x + base;
+                              int start, int step) {
+    int relative_index = blockIdx.x * blockDim.x + threadIdx.x;
+    int i = relative_index + start;
+
+    if (relative_index >= step) {
+        // out of range
+        return;
+    }
 
     int ix = i % width;
     int iy = i / width;
@@ -210,7 +216,10 @@ Matrix Matrix::gpu_dot_product(const Matrix &other) {
 Matrix Matrix::gpu_transpose() {
     dim3 dimBlock(THREADS_PER_BLOCK);
     int size = this->width * this->height;
-    dim3 dimGrid((size + dimBlock.x - 1) / dimBlock.x);
+    dim3 dimGrid((size / 4 + dimBlock.x - 1) / dimBlock.x);
+    if (dimGrid.x == 0) {
+        dimGrid.x = 1;
+    }
     Matrix result(this->width, this->height);
 
     // malloc device memory
@@ -220,21 +229,37 @@ Matrix Matrix::gpu_transpose() {
 
     // implement transpose by 4 streams
     cudaStream_t stream[4];
+    cudaEvent_t event[4];
     for (int i = 0; i < 4; i++) {
         cudaStreamCreate(&stream[i]);
+        cudaEventCreate(&event[i]);
     }
+
+    int step = size / 4 + (size % 4 == 0 ? 0 : 1);
     for (int i = 0; i < 4; i++) {
-        cudaMemcpyAsync(d_A + i * size / 4, this->data + i * size / 4,
-                        size * sizeof(double) / 4, cudaMemcpyHostToDevice,
+        int base = i * step;
+        cudaMemcpyAsync(d_A + base, this->data + base,
+                        step * sizeof(double), cudaMemcpyHostToDevice,
                         stream[i]);
 
-        GPU_transpose<<<dimGrid, dimBlock.x / 4, 0, stream[i]>>>(
-            d_A, d_B, this->width, this->height, i * size / 4);
+        GPU_transpose<<<dimGrid, dimBlock, 0, stream[i]>>>(
+            d_A, d_B, this->width, this->height, base, step);
+        cudaEventRecord(event[i], stream[i]);
+    }
 
-        cudaMemcpyAsync(result.data + i * size / 4, d_B + i * size / 4,
-                        size * sizeof(double) / 4, cudaMemcpyDeviceToHost,
+    for (int i = 0; i < 4; ++i) {
+        int base = i * step;
+        // wait all other streams and copy data back
+        for (int j = 0; j < 4; j++) {
+            if (j != i) {
+                cudaStreamWaitEvent(stream[i], event[j], 0);
+            }
+        }
+        cudaMemcpyAsync(result.data + base, d_B + base,
+                        step * sizeof(double), cudaMemcpyDeviceToHost,
                         stream[i]);
     }
+
     // sync and free streams
     for (int i = 0; i < 4; i++) {
         cudaStreamSynchronize(stream[i]);

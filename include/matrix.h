@@ -31,6 +31,8 @@ class Matrix {
 
     // get the value of the matrix at (i, j)
     double value(int i, int j) const;
+    // set the value of the matrix at (i, j)
+    void set_value(int i, int j, double value);
 
     // getter functions
     double* get_data() const { return this->data; }
