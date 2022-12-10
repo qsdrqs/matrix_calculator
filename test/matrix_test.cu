@@ -94,11 +94,6 @@ TEST(MatrixGPUTest, Transpose2) {
     int height = 2000;
 
     Matrix m(height, width, time(NULL));
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width; ++j) {
-            m.set_value(i, j, i * width + j + 1);
-        }
-    }
 
     Matrix m2 = m.transpose();
 
@@ -113,15 +108,10 @@ TEST(MatrixGPUTest, Transpose2) {
 
 TEST(MatrixGPUTest, Transpose3) {
     // test matrix transpose
-    int width = 10;
-    int height = 2000;
+    int width = 1;
+    int height = 2;
 
     Matrix m(height, width, time(NULL));
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width; ++j) {
-            m.set_value(i, j, i * width + j + 1);
-        }
-    }
 
     Matrix m2 = m.transpose();
 

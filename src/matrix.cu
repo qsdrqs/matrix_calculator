@@ -214,12 +214,12 @@ Matrix Matrix::gpu_dot_product(const Matrix &other) {
 }
 
 Matrix Matrix::gpu_transpose() {
+    // define the stream number
+    int stream_num = 4;
     dim3 dimBlock(THREADS_PER_BLOCK);
     int size = this->width * this->height;
-    dim3 dimGrid((size / 4 + dimBlock.x - 1) / dimBlock.x);
-    if (dimGrid.x == 0) {
-        dimGrid.x = 1;
-    }
+    dim3 dimGrid((size + dimBlock.x - 1) / dimBlock.x);
+    dimGrid.x = (dimGrid.x + stream_num - 1) / stream_num;
     Matrix result(this->width, this->height);
 
     // malloc device memory
@@ -227,16 +227,16 @@ Matrix Matrix::gpu_transpose() {
     cudaMalloc((void **)&d_A, size * sizeof(double));
     cudaMalloc((void **)&d_B, size * sizeof(double));
 
-    // implement transpose by 4 streams
-    cudaStream_t stream[4];
-    cudaEvent_t event[4];
-    for (int i = 0; i < 4; i++) {
+    // implement transpose by stream_num streams
+    cudaStream_t stream[stream_num];
+    cudaEvent_t event[stream_num];
+    for (int i = 0; i < stream_num; i++) {
         cudaStreamCreate(&stream[i]);
         cudaEventCreate(&event[i]);
     }
 
-    int step = size / 4 + (size % 4 == 0 ? 0 : 1);
-    for (int i = 0; i < 4; i++) {
+    int step = (size + stream_num - 1) / stream_num;
+    for (int i = 0; i < stream_num; i++) {
         int base = i * step;
         cudaMemcpyAsync(d_A + base, this->data + base,
                         step * sizeof(double), cudaMemcpyHostToDevice,
@@ -247,10 +247,10 @@ Matrix Matrix::gpu_transpose() {
         cudaEventRecord(event[i], stream[i]);
     }
 
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < stream_num; ++i) {
         int base = i * step;
         // wait all other streams and copy data back
-        for (int j = 0; j < 4; j++) {
+        for (int j = 0; j < stream_num; j++) {
             if (j != i) {
                 cudaStreamWaitEvent(stream[i], event[j], 0);
             }
@@ -261,7 +261,7 @@ Matrix Matrix::gpu_transpose() {
     }
 
     // sync and free streams
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < stream_num; i++) {
         cudaStreamSynchronize(stream[i]);
         cudaStreamDestroy(stream[i]);
     }
